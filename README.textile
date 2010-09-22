@@ -1,0 +1,120 @@
+h1. APN on Mongoid (Apple Push Notifications on Mongoid)
+
+APN on Mongoid is a rewritten fork of the APN on Rails gem. APN stands for Apple Push Notification [Service].
+Its purpose is to allow the use of Mongoid and in turn a MongoDB for sending Push Notifications. Build for Rails 3 and Mongoid 2.X.
+
+h2. Acknowledgements:
+
+This gem is a re-write of the APN for Rails gem written by PRX and Mark Bates which is also a re-write
+from a plugin that was written by Fabien Penso and Sam Soffes.
+APN on Rails is a good gem but it has its limitations and restrictions on ORM use.
+
+Most of the documentation listed below is a duplication of the documentation by APN on Rails. I respect
+all the work that went into that gem.
+
+h2. Converting Your Certificate:
+
+Once you have the certificate from Apple for your application, export your key
+and the apple certificate as p12 files. Here is a quick walkthrough on how to do this:
+
+1. Click the disclosure arrow next to your certificate in Keychain Access and select the certificate and the key. 
+2. Right click and choose `Export 2 items...`. 
+3. Choose the p12 format from the drop down and name it `cert.p12`. 
+
+Now covert the p12 file to a pem file:
+<pre><code>
+  $ openssl pkcs12 -in cert.p12 -out apple_push_notification_production.pem -nodes -clcerts
+</code></pre>
+
+Put 'apple_push_notification_production.pem' in config/
+
+If you are using a development certificate, then change the name to apple_push_notification_development.pem instead.
+
+h2. Installing:
+
+h3. Bundler:
+<pre><code>
+  gem "apn_on_mongoid", :git => "## GIT ADDR HERE ##"
+</code></pre>
+
+*WORK ON DOCS BELOW*
+
+h2. Setup and Configuration:
+
+You also need to add the following to your Rakefile so you can use the
+Rake tasks that ship with APN on Rails:
+<pre><code>
+  begin
+    require 'apn_on_rails_tasks'
+  rescue MissingSourceFile => e
+    puts e.message
+  end
+</code></pre>
+
+Now, to create the tables you need for APN on Rails, run the following task:
+<pre><code>
+  $ ruby script/generate apn_migrations
+</code></pre>
+
+APN on Rails uses the Configatron gem, http://github.com/markbates/configatron/tree/master, 
+to configure itself. APN on Rails has the following default configurations that you change as you
+see fit:
+
+<pre><code>
+  # development (delivery):
+  configatron.apn.passphrase # => ''
+  configatron.apn.port # => 2195
+  configatron.apn.host # => 'gateway.sandbox.push.apple.com'
+  configatron.apn.cert #=> File.join(RAILS_ROOT, 'config', 'apple_push_notification_development.pem')
+  
+  # production (delivery):
+  configatron.apn.host # => 'gateway.push.apple.com'
+  configatron.apn.cert #=> File.join(RAILS_ROOT, 'config', 'apple_push_notification_production.pem')
+  
+  # development (feedback):
+  configatron.apn.feedback.passphrase # => ''
+  configatron.apn.feedback.port # => 2196
+  configatron.apn.feedback.host # => 'feedback.sandbox.push.apple.com'
+  configatron.apn.feedback.cert #=> File.join(RAILS_ROOT, 'config', 'apple_push_notification_development.pem')
+  
+  # production (feedback):
+  configatron.apn.feedback.host # => 'feedback.push.apple.com'
+  configatron.apn.feedback.cert #=> File.join(RAILS_ROOT, 'config', 'apple_push_notification_production.pem')
+</code></pre>
+
+That's it, now you're ready to start creating notifications.
+
+h3. Upgrade Notes:
+
+If you are upgrading to a new version of APN on Rails you should always run:
+<pre><code>
+  $ ruby script/generate apn_migrations
+</code></pre>
+
+That way you ensure you have the latest version of the database tables needed.
+
+h2. Example:
+
+<pre><code>
+  $ ./script/console
+  >> device = APN::Device.create(:token => "XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX")
+  >> notification = APN::Notification.new
+  >> notification.device = device
+  >> notification.badge = 5
+  >> notification.sound = true
+  >> notification.alert = "foobar"
+  >> notification.save
+</code></pre>
+
+You can use the following Rake task to deliver your notifications:
+<pre><code>
+  $ rake apn:notifications:deliver
+</code></pre>
+
+The Rake task will find any unsent notifications in the database. If there aren't any notifications
+it will simply do nothing. If there are notifications waiting to be delivered it will open a single connection
+to Apple and push all the notifications through that one connection. Apple does not like people opening/closing
+connections constantly, so it's pretty important that you are careful about batching up your notifications so
+Apple doesn't shut you down.
+
+Released under the MIT license.
