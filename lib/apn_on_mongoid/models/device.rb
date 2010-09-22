@@ -11,6 +11,8 @@ module APN
 
     index :udid, :unique => true, :background => true
     
+    referenced_in :notification, :class_name => "APN::Notification", :inverse_of => :device
+    
     validates_uniqueness_of :token
     validates_format_of :token, :with => /^[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}\s[a-z0-9]{8}$/
 

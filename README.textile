@@ -1,20 +1,18 @@
 h1. WARNING VERY ALPHA
 
-This is the first build of the gem. Use in production at your own imminent -devise- demise.
+This is the first build of the gem. Use in production at your own imminent -devise- demise. The gem will successfully send a notification to a device with no worries. However this is only with basic testing and no real production use tests.
 
 h1. APN on Mongoid (Apple Push Notifications on Mongoid)
 
 APN on Mongoid is a rewritten fork of the APN on Rails gem. APN stands for Apple Push Notification [Service].
-Its purpose is to allow the use of Mongoid and in turn a MongoDB for sending Push Notifications. Build for Rails 3 and Mongoid 2.X.
+Its purpose is to allow the use of Mongoid and in turn a MongoDB for sending Push Notifications. Built for Rails 3 and Mongoid 2.X.
 
 h2. Acknowledgements:
 
-This gem is a re-write of the APN for Rails gem written by PRX and Mark Bates which is also a re-write
-from a plugin that was written by Fabien Penso and Sam Soffes.
-APN on Rails is a good gem but it has its limitations and restrictions on ORM use.
+This gem is a re-write of the APN for Rails gem written by PRX and Mark Bates which is also a re-write from a plugin that was written by Fabien Penso and Sam Soffes.
+APN on Rails is a good gem but it has its limitations and restrictions which doesn't allow Mongoid love.
 
-Most of the documentation listed below is a duplication of the documentation by APN on Rails. I respect
-all the work that went into that gem.
+Most of the documentation listed below is a duplication of the documentation by APN on Rails. I respect all the work that went into that gem.
 
 h2. Converting Your Certificate:
 
@@ -27,18 +25,55 @@ and the apple certificate as p12 files. Here is a quick walkthrough on how to do
 
 Now covert the p12 file to a pem file:
 <pre><code>
-  $ openssl pkcs12 -in cert.p12 -out apple_push_notification_production.pem -nodes -clcerts
+  $ openssl pkcs12 -in cert.p12 -out apns_certificate_production.pem -nodes -clcerts
 </code></pre>
 
-Put 'apple_push_notification_production.pem' in config/
+Put 'apns_certificate_production.pem' in config/
 
-If you are using a development certificate, then change the name to apple_push_notification_development.pem instead.
+If you are using a development certificate, then change the name to apns_certificate_development.pem instead.
 
 h2. Installing:
 
 h3. Bundler:
+
+Dead simple. Just use Bundler :)
+
 <pre><code>
-  gem "apn_on_mongoid", :git => "## GIT ADDR HERE ##"
+  gem "apn_on_mongoid", :git => "git://github.com/alexeckermann/apn_on_mongoid.git"
 </code></pre>
 
-h2. More docs to come!
+h2. Setup and Configuration:
+
+Unlike APN on Rails this gem does not require any additional configuration or changes. The APN configuration items are available in the APN class.
+
+If you do wish to make changes simply create a apn_on_mongoid.rb file in your config folder. The file can be used like this:
+
+<pre><code>
+  APN.setup do |config|
+    
+    config.host = 'gateway.push.apple.com'
+    config.port = 2195
+    
+    config.feedback_host = 'feedback.push.apple.com'
+    config.feedback_port = 2196
+    
+    config.cert = "#{::Rails.root.to_s}/config/my_custom_cert.pem"
+    
+    config.passphrase = 'ilikemangos'
+    
+  end
+</code></pre>
+
+h2. Example
+
+<pre><code>
+  $ rails console
+  >> d = APN::Device.create(:udid => "123456abcdefg", :token => "XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX")
+  >> n = APN::Notification.new
+  >> n.device = d
+  >> n.alert = "G'day from APN on Mongoid"
+  >> n.sound = "default"
+  >> n.badge = 1337
+  >> n.save
+  >> APN::Notification.send_notifications
+</code></pre>

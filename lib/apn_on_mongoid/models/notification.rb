@@ -13,10 +13,21 @@ module APN
     field :device_language
     field :errors_nb
 
-    references_one :device
+    references_one :device, :class_name => "APN::Device"
     
     before_save :truncate_alert
-
+    
+    # Stores the text alert message you want to send to the device.
+    # 
+    # If the message is over 150 characters long it will get truncated
+    # to 150 characters with a <tt>...</tt>
+    def alert=(message)
+      if !message.blank? && message.size > 150
+        message = truncate(message, :length => 150)
+      end
+      write_attribute('alert', message)
+    end
+    
     # Creates a Hash that will be the payload of an APN.
     # 
     # Example:
@@ -34,7 +45,7 @@ module APN
         result['aps']['sound'] = self.sound if self.sound.is_a? String
         result['aps']['sound'] = "1.aiff" if self.sound.is_a?(TrueClass)
       end
-      result.merge! payload if payload
+      result.merge! payload if defined?(payload)
       result
     end
 
