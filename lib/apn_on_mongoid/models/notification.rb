@@ -7,8 +7,8 @@ module APN
 
     field :sound
     field :alert, :size => 150
-    field :badge
-    field :custom_properties
+    field :badge, :type => Integer
+    field :payload, :type => Hash
     field :sent_at, :type => DateTime
     field :device_language
     field :errors_nb
@@ -45,7 +45,7 @@ module APN
         result['aps']['sound'] = self.sound if self.sound.is_a? String
         result['aps']['sound'] = "1.aiff" if self.sound.is_a?(TrueClass)
       end
-      result.merge! payload if defined?(payload)
+      result.merge! self.payload if self.payload
       result
     end
 
@@ -82,9 +82,7 @@ module APN
       # As each APN::Notification is sent the <tt>sent_at</tt> column will be timestamped,
       # so as to not be sent again.
       # 
-      # This can be run from the following Rake task:
-      #   $ rake apn:notifications:deliver
-      def send_notifications(notifications = APN::Notification.all(:conditions => {:sent_at => nil}))
+      def deliver_notifications(notifications = APN::Notification.all(:conditions => {:sent_at => nil}))
         unless notifications.nil? || notifications.empty?
 
           APN::Connection.open_for_delivery do |conn, sock|

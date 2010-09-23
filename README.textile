@@ -75,5 +75,5 @@ h2. Example
   >> n.sound = "default"
   >> n.badge = 1337
   >> n.save
-  >> APN::Notification.send_notifications
+  >> APN::Notification.deliver_notifications
 </code></pre>

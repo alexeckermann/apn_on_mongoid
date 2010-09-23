@@ -24,7 +24,7 @@ module APN # :nodoc:
   mattr_accessor :cert
   @@cert = File.join(::Rails.root.to_s, 'config', (::Rails.env == "production" ? 'apns_certificate_production.pem' : 'apns_certificate_development.pem')) # THIS DONT WORK! Rails.root isnt set at this point :(
   
-  # Passphrase for APNS
+  # Passphrase for certificate
   mattr_accessor :passphrase
   @@passphrase = ''
   
