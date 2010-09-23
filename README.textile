@@ -9,10 +9,9 @@ Its purpose is to allow the use of Mongoid and in turn a MongoDB for sending Pus
 
 h2. Acknowledgements:
 
-This gem is a re-write of the APN for Rails gem written by PRX and Mark Bates which is also a re-write from a plugin that was written by Fabien Penso and Sam Soffes.
-APN on Rails is a good gem but it has its limitations and restrictions which doesn't allow Mongoid love.
+This gem is a re-write of the APN for Rails gem written by PRX and Mark Bates which is also a re-write from a plugin that was written by Fabien Penso and Sam Soffes. APN on Rails is a good gem but it has its limitations and restrictions which doesn't allow Mongoid love.
 
-Most of the documentation listed below is a duplication of the documentation by APN on Rails. I respect all the work that went into that gem.
+Some of the documentation listed below is a duplication of the documentation by APN on Rails.
 
 h2. Converting Your Certificate:
 
@@ -64,11 +63,13 @@ If you do wish to make changes simply create a apn_on_mongoid.rb file in your co
   end
 </code></pre>
 
+This configuration style is the same used in Devise.
+
 h2. Example
 
 <pre><code>
   $ rails console
-  >> d = APN::Device.create(:udid => "123456abcdefg", :token => "XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX")
+  >> d = APN::Device.create(:udid => "1a2b3c4d", :token => "XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX XXXXXXXX")
   >> n = APN::Notification.new
   >> n.device = d
   >> n.alert = "G'day from APN on Mongoid"
@@ -77,3 +78,10 @@ h2. Example
   >> n.save
   >> APN::Notification.deliver_notifications
 </code></pre>
+
+h2. TODO
+
+* Making APN::Device's and tokens separate allowing for APN::Application's and multiple token registrations for a device for many applications
+** Handy for people with multiple apps under their belt
+* Investigate using delayed_job for notification delivery rather than rake
+* Examples for using whenever and delivering notifications via cron
