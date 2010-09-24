@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Alex Eckermann", "all the APN on Rails contributors"]
-  s.date = %q{2010-09-23}
+  s.date = %q{2010-09-24}
   s.description = %q{Apple Push Notification delivery powered by Mongoid}
   s.email = %q{alex+apn_on_mongoid@alexeckermann.com}
   s.extra_rdoc_files = [
@@ -22,8 +22,10 @@ Gem::Specification.new do |s|
      "lib/apn_on_mongoid.rb",
      "lib/apn_on_mongoid/connection.rb",
      "lib/apn_on_mongoid/feedback.rb",
+     "lib/apn_on_mongoid/models/application.rb",
      "lib/apn_on_mongoid/models/device.rb",
      "lib/apn_on_mongoid/models/notification.rb",
+     "lib/apn_on_mongoid/models/subscription.rb",
      "lib/apn_on_mongoid/version.rb"
   ]
   s.homepage = %q{http://github.com/alex/apn_on_mongoid}
