@@ -9,7 +9,7 @@ module APN
     field :alert, :size => 150
     field :badge, :type => Integer
     field :payload, :type => Hash
-    field :sent_at, :type => DateTime
+    field :sent_at, :type => Time
     field :device_language
     field :errors_nb
 
@@ -27,8 +27,8 @@ module APN
     # This will have to do until Mongoid implements a better search for
     # embeded items.
     def subscription
-      device = APN::Device.where(:subscriptions => {'$elemMatch' => { :_id => self.subscription_id }}).first.cache
-      device.subscriptions.where(:_id => self.subscription_id).first.cache
+      device = APN::Device.where(:subscriptions => {'$elemMatch' => { :_id => self.subscription_id }}).first
+      device.subscriptions.where(:_id => self.subscription_id).first
     end
     
     # Stores the text alert message you want to send to the device.

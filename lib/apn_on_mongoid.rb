@@ -22,7 +22,7 @@ module APN # :nodoc:
   
   # Port number for the APNS feedback
   mattr_accessor :cert
-  @@cert = File.join(::Rails.root.to_s, 'config', (::Rails.env == "production" ? 'apns_certificate_production.pem' : 'apns_certificate_development.pem')) # THIS DONT WORK! Rails.root isnt set at this point :(
+  @@cert = File.join('.', 'config', (::Rails.env == "production" ? 'apns_certificate_production.pem' : 'apns_certificate_development.pem')) # THIS DONT WORK! Rails.root isnt set at this point :(
   
   # Passphrase for certificate
   mattr_accessor :passphrase
